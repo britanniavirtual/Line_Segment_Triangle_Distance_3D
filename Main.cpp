@@ -19,10 +19,11 @@ int main()
 	float nearestDist;
 
 	vecUtils.closestDistanceBetweenLineSegmentAndTriangle3D(linePos1, linePos2, v1, v2, v3, &nearestPoint, &nearestDist);
-	
-	//Print result
-	cout << ":" << nearestPoint.x << " " << nearestPoint.y << " " << nearestPoint.z << endl;
-	cout << "dist " << nearestDist << endl;
+
+	{
+		cout << ":" << nearestPoint.x << " " << nearestPoint.y << " " << nearestPoint.z << endl;
+		cout << "dist " << nearestDist << endl;
+	}
 
 	system("PAUSE");
 }

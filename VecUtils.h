@@ -74,6 +74,7 @@ public:
 		return Vector3D(f / x, f / y, f / z);
 	}
 
+
 	void operator+=(const Vector3D& inputVector)
 	{
 		this->x = inputVector.x + this->x;
@@ -134,7 +135,9 @@ public:
 	Vector3D closestPointTriangle(Vector3D p, Vector3D a, Vector3D b, Vector3D c);
 	Vector3D closestPointOnSegment(Vector3D linePointA, Vector3D linePointB, Vector3D point);
 	Vector3D closestPointOnPlaneToPoint(Vector3D planeNormal, Vector3D planePoint, Vector3D point);
-	
+	Vector3D triangleToNormal(Vector3D a, Vector3D b, Vector3D c);
+	Vector3D cross(const Vector3D& A, const Vector3D& B);
+
 	void closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Vector3D p2, Vector3D v1, Vector3D v2, Vector3D v3, Vector3D * nearestPoint, float * nearestDist);
 };
 

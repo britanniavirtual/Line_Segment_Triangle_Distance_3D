@@ -194,23 +194,37 @@ Vector3D intersectionPoint(Vector3D lineStart, Vector3D lineEnd, Vector3D planeP
 	return intersection;
 }
 
+Vector3D VectorUtils::cross(const Vector3D& A, const Vector3D& B)
+{
+	Vector3D crossP(0, 0, 0);
+	crossP.x = A.y * B.z - A.z * B.y;
+	crossP.y = A.z * B.x - A.x * B.z;
+	crossP.z = A.x * B.y - A.y * B.x;
+
+	return crossP;
+}
 
 
+Vector3D VectorUtils::triangleToNormal(Vector3D a, Vector3D b, Vector3D c)
+{
+	Vector3D side1 = b - a;
+	Vector3D side2 = c - a;
 
+	return cross(side1, side2);
+}
 
 
 void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Vector3D p2, Vector3D v1, Vector3D v2, Vector3D v3, Vector3D * nearestPoint, float * nearestDist)
 {
-
 	//////////////////////////////////////////////////////////
 	//DESC:
-	//Case 1: Line intersects triangle plane --> Get nearest of the 3 possible points compute distance.
+	//Case 1: Line intersects plane --> Get nearest of the 3 possible points compute distance.
 		//Case 1b: If inside the triangle distance is: 0.
 
-	//Case 2: Line does not intersect plane
+	//Case 2: Line does not intsersect plane
 		//For A and B
 		//Get nearest point distance to: triangle itself, triangles edges. Nearest dist is nearest dist result.
-	
+
 	//Distances in question
 	//////////////////////////////////////////////////////////
 
@@ -228,31 +242,39 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 
 	float distance_01_NearestEdge;
 	float distance_01_TriangleArea;
-	
+
 	float distance_02_NearestEdge;
 	float distance_02_TriangleArea;
 
 	//[(1/2) Plane intersect and ONLY intersect]
 	Vector3D planeIntersectedEdgePoint;
-	Vector3D ip = intersectionPoint(p2, p1, Vector3D(0, 0, 0), Vector3D(0, 1, 0));
+	Vector3D triangleNormal = vecUtils.triangleToNormal(v1, v2, v3);
+
+	Vector3D triangleCentroid;
+	triangleCentroid.x = (v1.x + v2.x + v3.x) / 3;
+	triangleCentroid.y = (v1.y + v2.y + v3.y) / 3;
+	triangleCentroid.z = (v1.z + v2.z + v3.z) / 3;
+
+	Vector3D ip = intersectionPoint(p2, p1, triangleCentroid, triangleNormal);
 
 	if (isPointInsideTriangle3D(ip, v1, v2, v3))//Line goes through the triangle
 	{
+		//con.lowerField = "Intersect 1.";
 		finalPoint = ip;
 		finalDistance = 0.0;
 	}
 	else
 	{
+		//con.lowerField = "No Intersect 1.";
+
 		bool intersectsPlane = false;
 
 		if (ip.x == INFINITE)
 		{
-			//"No intersect.";
 		}
 		else
 		{
 			intersectsPlane = true;
-			//"intersect.";
 		}
 
 		{
@@ -290,6 +312,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 
 		//2/2) Nearest positions
 
+
 		//NODE 1
 		//1/2) Triangle edges
 		Vector3D p1NearestEdgePoint;
@@ -326,10 +349,12 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			point_01_Edge = p1NearestEdgePoint;
 		}
 
+
 		//2/2) Triangle area
 		Vector3D closestTrianglePoint_01 = closestPointTriangle(p1, v1, v2, v3);
 		distance_01_TriangleArea = dist(closestTrianglePoint_01, p1);
 		point_01_Triangle = closestTrianglePoint_01;
+
 
 		//NODE 2
 		//1/2) Triangle edges
@@ -367,13 +392,15 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			point_02_Edge = p2NearestEdgePoint;
 		}
 
+
 		//2/2) Triangle area
 		Vector3D closestTrianglePoint_02 = closestPointTriangle(p2, v1, v2, v3);
-		distance_02_TriangleArea = dist(closestTrianglePoint_01, p2);
-		point_02_Triangle = closestTrianglePoint_01;
+		distance_02_TriangleArea = dist(closestTrianglePoint_02, p2);
+		point_02_Triangle = closestTrianglePoint_02;
 
 
 		//[Find closest distance]
+
 		if (distance_Plane <= distance_01_NearestEdge)
 		{
 			if (distance_Plane <= distance_01_TriangleArea)
@@ -388,6 +415,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 				}
 			}
 		}
+
 
 		if (distance_01_NearestEdge <= distance_Plane)
 		{
@@ -448,7 +476,6 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 				}
 			}
 		}
-
 	}
 
 	*nearestDist = finalDistance;
