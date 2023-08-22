@@ -20,6 +20,8 @@ public:
 		z = 0;
 	}
 
+	//[Mathematics operations]
+
 	//Add two vectors
 	Vector3D operator+(const Vector3D& inputVector) const
 	{
@@ -74,7 +76,7 @@ public:
 		return Vector3D(f / x, f / y, f / z);
 	}
 
-
+	//[Cumulative operations]
 	void operator+=(const Vector3D& inputVector)
 	{
 		this->x = inputVector.x + this->x;

@@ -217,7 +217,7 @@ Vector3D VectorUtils::triangleToNormal(Vector3D a, Vector3D b, Vector3D c)
 void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Vector3D p2, Vector3D v1, Vector3D v2, Vector3D v3, Vector3D * nearestPoint, float * nearestDist)
 {
 	//////////////////////////////////////////////////////////
-	//DESC:
+	//Algorithm:
 	//Case 1: Line intersects plane --> Get nearest of the 3 possible points compute distance.
 		//Case 1b: If inside the triangle distance is: 0.
 
@@ -225,7 +225,6 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 		//For A and B
 		//Get nearest point distance to: triangle itself, triangles edges. Nearest dist is nearest dist result.
 
-	//Distances in question
 	//////////////////////////////////////////////////////////
 
 	Vector3D finalPoint(0, 0, 0);
@@ -239,11 +238,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 	float finalDistance = INFINITE;
 
 	float distance_Plane;
-
-	float distance_01_NearestEdge;
 	float distance_01_TriangleArea;
-
-	float distance_02_NearestEdge;
 	float distance_02_TriangleArea;
 
 	//[(1/2) Plane intersect and ONLY intersect]
@@ -259,14 +254,11 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 
 	if (isPointInsideTriangle3D(ip, v1, v2, v3))//Line goes through the triangle
 	{
-		//con.lowerField = "Intersect 1.";
 		finalPoint = ip;
 		finalDistance = 0.0;
 	}
 	else
 	{
-		//con.lowerField = "No Intersect 1.";
-
 		bool intersectsPlane = false;
 
 		if (ip.x == INFINITE)
@@ -287,6 +279,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			float d3 = dist(c3, ip);
 
 			int n = 0;
+
 			//Closest edge to plane intersect point
 			if (d1 <= d2 && d1 <= d3)
 			{
@@ -314,166 +307,45 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 
 
 		//NODE 1
-		//1/2) Triangle edges
-		Vector3D p1NearestEdgePoint;
-		{
-			Vector3D c1 = closestPointOnSegment(v1, v2, p1);
-			Vector3D c2 = closestPointOnSegment(v2, v3, p1);
-			Vector3D c3 = closestPointOnSegment(v3, v1, p1);
 
-			float d1 = dist(c1, p1);
-			float d2 = dist(c2, p1);
-			float d3 = dist(c3, p1);
-
-			int n = 0;
-			//Closest edge to plane intersect point
-			if (d1 <= d2 && d1 <= d3)
-			{
-				n = 1;
-				p1NearestEdgePoint = c1;
-			}
-
-			if (d2 <= d3 && d2 <= d1)
-			{
-				n = 2;
-				p1NearestEdgePoint = c2;
-			}
-
-			if (d3 <= d2 && d3 <= d1)
-			{
-				n = 3;
-				p1NearestEdgePoint = c3;
-			}
-
-			distance_01_NearestEdge = dist(p1NearestEdgePoint, p1);
-			point_01_Edge = p1NearestEdgePoint;
-		}
-
-
-		//2/2) Triangle area
+		//Triangle area
 		Vector3D closestTrianglePoint_01 = closestPointTriangle(p1, v1, v2, v3);
 		distance_01_TriangleArea = dist(closestTrianglePoint_01, p1);
 		point_01_Triangle = closestTrianglePoint_01;
 
 
 		//NODE 2
-		//1/2) Triangle edges
-		Vector3D p2NearestEdgePoint;
-		{
-			Vector3D c1 = closestPointOnSegment(v1, v2, p2);
-			Vector3D c2 = closestPointOnSegment(v2, v3, p2);
-			Vector3D c3 = closestPointOnSegment(v3, v1, p2);
-
-			float d1 = dist(c1, p2);
-			float d2 = dist(c2, p2);
-			float d3 = dist(c3, p2);
-
-			int n = 0;
-			//Closest edge to plane intersect point
-			if (d1 <= d2 && d1 <= d3)
-			{
-				n = 1;
-				p2NearestEdgePoint = c1;
-			}
-
-			if (d2 <= d3 && d2 <= d1)
-			{
-				n = 2;
-				p2NearestEdgePoint = c2;
-			}
-
-			if (d3 <= d2 && d3 <= d1)
-			{
-				n = 3;
-				p2NearestEdgePoint = c3;
-			}
-
-			distance_02_NearestEdge = dist(p2NearestEdgePoint, p2);
-			point_02_Edge = p2NearestEdgePoint;
-		}
-
-
-		//2/2) Triangle area
+		//Triangle area
 		Vector3D closestTrianglePoint_02 = closestPointTriangle(p2, v1, v2, v3);
 		distance_02_TriangleArea = dist(closestTrianglePoint_02, p2);
 		point_02_Triangle = closestTrianglePoint_02;
 
-
 		//[Find closest distance]
 
-		if (distance_Plane <= distance_01_NearestEdge)
+		if (distance_Plane <= distance_01_TriangleArea)
 		{
-			if (distance_Plane <= distance_01_TriangleArea)
+			if (distance_Plane <= distance_02_TriangleArea)
 			{
-				if (distance_Plane <= distance_02_NearestEdge)
-				{
-					if (distance_Plane <= distance_02_TriangleArea)
-					{
-						finalDistance = distance_Plane;
-						finalPoint = pointPlane;
-					}
-				}
-			}
-		}
-
-
-		if (distance_01_NearestEdge <= distance_Plane)
-		{
-			if (distance_01_NearestEdge <= distance_01_TriangleArea)
-			{
-				if (distance_01_NearestEdge <= distance_02_NearestEdge)
-				{
-					if (distance_01_NearestEdge <= distance_02_TriangleArea)
-					{
-						finalDistance = distance_01_NearestEdge;
-						finalPoint = point_01_Edge;
-					}
-				}
+				finalDistance = distance_Plane;
+				finalPoint = pointPlane;
 			}
 		}
 
 		if (distance_01_TriangleArea <= distance_Plane)
 		{
-			if (distance_01_TriangleArea <= distance_01_NearestEdge)
+			if (distance_01_TriangleArea <= distance_02_TriangleArea)
 			{
-				if (distance_01_TriangleArea <= distance_02_NearestEdge)
-				{
-					if (distance_01_TriangleArea <= distance_02_TriangleArea)
-					{
-						finalDistance = distance_01_TriangleArea;
-						finalPoint = point_01_Triangle;
-					}
-				}
-			}
-		}
-
-		if (distance_02_NearestEdge <= distance_Plane)
-		{
-			if (distance_02_NearestEdge <= distance_01_NearestEdge)
-			{
-				if (distance_02_NearestEdge <= distance_01_TriangleArea)
-				{
-					if (distance_02_NearestEdge <= distance_02_TriangleArea)
-					{
-						finalDistance = distance_02_NearestEdge;
-						finalPoint = point_02_Edge;
-					}
-				}
+				finalDistance = distance_01_TriangleArea;
+				finalPoint = point_01_Triangle;
 			}
 		}
 
 		if (distance_02_TriangleArea <= distance_Plane)
 		{
-			if (distance_02_TriangleArea <= distance_01_NearestEdge)
+			if (distance_02_TriangleArea <= distance_01_TriangleArea)
 			{
-				if (distance_02_TriangleArea <= distance_01_TriangleArea)
-				{
-					if (distance_02_TriangleArea <= distance_02_NearestEdge)
-					{
-						finalDistance = distance_02_TriangleArea;
-						finalPoint = point_02_Triangle;
-					}
-				}
+				finalDistance = distance_02_TriangleArea;
+				finalPoint = point_02_Triangle;
 			}
 		}
 	}
