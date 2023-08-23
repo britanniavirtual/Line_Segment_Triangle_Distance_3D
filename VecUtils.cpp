@@ -229,9 +229,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 
 	Vector3D finalPoint(0, 0, 0);
 	Vector3D pointPlane(0, 0, 0);
-	Vector3D point_01_Edge(0, 0, 0);
 	Vector3D point_01_Triangle(0, 0, 0);
-	Vector3D point_02_Edge(0, 0, 0);
 	Vector3D point_02_Triangle(0, 0, 0);
 
 	//Distances:
@@ -303,16 +301,13 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			pointPlane = planeIntersectedEdgePoint;
 		}
 
-		//2/2) Nearest positions
-
+		//2/2) Nearest positions on triangle
 
 		//NODE 1
-
 		//Triangle area
 		Vector3D closestTrianglePoint_01 = closestPointTriangle(p1, v1, v2, v3);
 		distance_01_TriangleArea = dist(closestTrianglePoint_01, p1);
 		point_01_Triangle = closestTrianglePoint_01;
-
 
 		//NODE 2
 		//Triangle area
@@ -328,6 +323,10 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			{
 				finalDistance = distance_Plane;
 				finalPoint = pointPlane;
+				
+				*nearestDist = finalDistance;
+				*nearestPoint = finalPoint;
+				return;
 			}
 		}
 
@@ -337,6 +336,10 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			{
 				finalDistance = distance_01_TriangleArea;
 				finalPoint = point_01_Triangle;
+
+				*nearestDist = finalDistance;
+				*nearestPoint = finalPoint;
+				return;
 			}
 		}
 
@@ -346,10 +349,11 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 			{
 				finalDistance = distance_02_TriangleArea;
 				finalPoint = point_02_Triangle;
+
+				*nearestDist = finalDistance;
+				*nearestPoint = finalPoint;
+				return;
 			}
 		}
 	}
-
-	*nearestDist = finalDistance;
-	*nearestPoint = finalPoint;
 }
