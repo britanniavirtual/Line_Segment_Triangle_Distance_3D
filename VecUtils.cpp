@@ -254,6 +254,7 @@ void VectorUtils::closestDistanceBetweenLineSegmentAndTriangle3D(Vector3D p1, Ve
 	{
 		finalPoint = ip;
 		finalDistance = 0.0;
+		return;
 	}
 	else
 	{
